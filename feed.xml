@@ -6,10 +6,19 @@
     <description>Recent content on lhw blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 20 Jun 2018 17:52:41 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 22 Jun 2018 10:08:24 +0800</lastBuildDate>
     
 	<atom:link href="https://lhwcd.github.io/feed.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ubuntu域名暂时不能解析</title>
+      <link>https://lhwcd.github.io/posts/ubuntu-domain/</link>
+      <pubDate>Fri, 22 Jun 2018 10:08:24 +0800</pubDate>
+      
+      <guid>https://lhwcd.github.io/posts/ubuntu-domain/</guid>
+      <description>ubuntu域名暂时不能解析问题 我们新安装的ubuntu机器，在sudo apt-get update的时候，有时会出现 Temporary failure resolving &#39;us.archive.ubu</description>
+    </item>
     
     <item>
       <title>链表常见算法</title>
