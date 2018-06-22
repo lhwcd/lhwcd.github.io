@@ -65,7 +65,7 @@
   </h1>
   <p class="article-author">By
     
-      <a href="http://lhwcd.github.io" title=""></a>
+      <a href="http://lhwdev.com/posts/" title="lhw">lhw</a>
     
   </p>
   <p class="article-time">
@@ -74,6 +74,23 @@
 </header>
 
 	<div class="article-content">
+    
+		<div class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+      <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#逆转单链表">逆转单链表</a></li>
+<li><a href="#单链表是否有环">单链表是否有环</a></li>
+<li><a href="#单向有环链表中环的长度">单向有环链表中环的长度</a></li>
+<li><a href="#找到单向链表的环入口点">找到单向链表的环入口点</a></li>
+<li><a href="#找到链表的中间节点">找到链表的中间节点</a></li>
+<li><a href="#求链表倒数第k个节点">求链表倒数第k个节点</a></li>
+</ul></li>
+</ul>
+</nav>
+		</div>
     
     
 
@@ -204,6 +221,51 @@ a+b+kc = 2d
 
 </code></pre>
 
+<h2 id="找到链表的中间节点">找到链表的中间节点</h2>
+
+<p>找链表的中间节点，如果链表的长度为偶数，返回中间两个节点的任意一个，若为奇数，则返回中间节点。其实解决方案也可以通过快慢指针来完成，用两个指针从链表头节点开始，一个指针每次向后移动两步，一个每次移动一步，直到快指针移到到尾节点，那么慢指针即是所求。所以我们处理链表问题的时候，一定要用好快慢指针。下面是代码</p>
+
+<pre><code>Node *getMiddleNode(Node *head) {
+    if (NULL == head) {
+        return NULL;
+    }
+    Node *step1 = head;
+    Node *step2 = head;
+    while (NULL != step2 &amp;&amp; NULL != step2-&gt;next) {
+        step1 = step1-&gt;next;
+        step2 = step2-&gt;next-&gt;next;
+    }
+    return step1;
+}
+</code></pre>
+
+<h2 id="求链表倒数第k个节点">求链表倒数第k个节点</h2>
+
+<p>输入一个单向链表，输出该链表中倒数第k个节点，链表的倒数第0个节点为链表的尾指针。解决思路类似快慢指针，但又稍有不同。设置两个指针slow和fast都指向head，然后fast向前走k步，这样slow和fast之间就间隔k个节点，最后slow和fast同时向前移动，直至fast走到链表末尾，那么slow指针就指向倒数第k个节点。下面是代码</p>
+
+<pre><code>Node *getKthNode(Node *head, int k) {
+    //
+    if (NULL == head || k &lt;= 0) {
+        return NULL;
+    }
+    //
+    Node *slow = head;
+    Node *fast = head;
+    while (k-- &gt;= 0) {
+        if (NULL == fast) {
+            return NULL;
+        }
+        fast = fast-&gt;next;
+    }
+    //
+    while (NULL != fast-&gt;next) {
+        fast = fast-&gt;next;
+        slow = slow-&gt;next;
+    }
+    return slow;
+}
+</code></pre>
+
 	</div>
   <footer class="article-footer clearfix">
   
@@ -211,13 +273,22 @@ a+b+kc = 2d
 <div class="article-tags">
   <span></span>
   
-  <a href="https://lhwcd.github.io/tags/list">list</a>
-  
   <a href="https://lhwcd.github.io/tags/%E7%AE%97%E6%B3%95">算法</a>
+  
+  <a href="https://lhwcd.github.io/tags/list">list</a>
   
 </div>
 
 
+
+
+
+<div class="article-categories">
+  <span></span>
+  
+  <a class="article-category-link" href="https://lhwcd.github.io/categories/%E7%AE%97%E6%B3%95">算法</a>
+  
+</div>
 
 
 
@@ -239,6 +310,15 @@ a+b+kc = 2d
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
 <aside class="clearfix">
   
+
+<div class="categorieslist">
+  <p class="asidetitle">分类</p>
+  <ul>
+    
+    <li><a href="https://lhwcd.github.io/categories/%e7%ae%97%e6%b3%95" title="算法">算法<sup>1</sup></a></li>
+    
+  </ul>
+</div>
 
 
 
