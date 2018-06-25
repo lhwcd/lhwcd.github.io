@@ -87,6 +87,11 @@
 <li><a href="#找到单向链表的环入口点">找到单向链表的环入口点</a></li>
 <li><a href="#找到链表的中间节点">找到链表的中间节点</a></li>
 <li><a href="#求链表倒数第k个节点">求链表倒数第k个节点</a></li>
+<li><a href="#逆序打印单链表">逆序打印单链表</a></li>
+<li><a href="#判断两个无环链表是否相交">判断两个无环链表是否相交</a></li>
+<li><a href="#判断两个有环链表是否相交">判断两个有环链表是否相交</a></li>
+<li><a href="#两个单链表的第一个公共节点">两个单链表的第一个公共节点</a></li>
+<li><a href="#链表问题总结">链表问题总结</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -265,6 +270,110 @@ a+b+kc = 2d
     return slow;
 }
 </code></pre>
+
+<h2 id="逆序打印单链表">逆序打印单链表</h2>
+
+<p>这个问题不难，主要有两个解决办法。第一个办法是使用stack，先压进去，出退出来，这样就逆序了。第二个办法就是使用递归，代码看起来比较简单。</p>
+
+<pre><code>void reversePrintList(Node *head) {
+    //
+    if (NULL == head) {
+        return;
+    }
+    //
+    reversePrintList(head-&gt;next);
+    //
+    std::cout &lt;&lt; head-&gt;data &lt;&lt; endl;
+}
+</code></pre>
+
+<h2 id="判断两个无环链表是否相交">判断两个无环链表是否相交</h2>
+
+<p>解决问题的思路，第一个简单粗暴，直接循环判断第一个链表的每个节点是否在第二个链表中，这样明显时间复杂度是O(len(list1)*len(list2))。第二个解决思路，我们用空间换时间，直接把list1每个节点放到hash表中，然后将list2的每个节点在hash表中检查是否已经存在了，那么时间复杂度就变成了O(len(list1)+len(list2))，空间复杂度变成了O(len(list1))，也不是特别好。我们再转变一下思路，能不能把相交的问题，变成判断环的问题？把list2接在list1后面，再用前面判断有环的方法来确定是否有环，有环的话，说明有相交，效率也不是很好，因为时间复杂度也是线性的。那么我们还有没有其它办法？其实如果两个环相交，那么相交节点之后的所有节点都是两个链表共同所有的，所以我们只需要判断两个链表的尾指针是否相等就可以了。这个方法时间复杂度是O(len(list1)+len(list2))，空间复杂度是O(1)，下面是代码</p>
+
+<pre><code>bool checkListIntersect(Node *head1, Node *head2) {
+    //
+    if (NULL == head1 || NULL == head2) {
+        return false;
+    }
+    //
+    if (NULL != head1-&gt;next) {
+        head1 = head1-&gt;next;
+    }
+    if (NULL != head2-&gt;next) {
+        head2 = head2-&gt;next;
+    }
+    //
+    return head1 == head2;
+}
+</code></pre>
+
+<h2 id="判断两个有环链表是否相交">判断两个有环链表是否相交</h2>
+
+<p>如果有环且两个链表相交，则两个链表都有共同一个环，即环上的任意一个节点都存在于两个链表上。因此，就可以判断一链表上俩指针相遇的那个节点，在不在另一条链表上。</p>
+
+<pre><code>
+bool checkListIntersectWithLoop(Node *head1, Node *head2) {
+    //
+    if (NULL == head1 || NULL == head2) {
+        return false;
+    }
+    //
+    if (!checkCircle(head1) || !checkCircle(head2)) {
+        return false;
+    }
+    //
+    Node *node = findCircleNode(head1);
+    if (NULL == node) {
+        return false;
+    }
+    //
+    while (NULL != head2) {
+        if (node == head2) {
+            return true;
+        } else {
+            head2 = head2-&gt;next;
+        }
+    }
+    return false;
+}
+</code></pre>
+
+<h2 id="两个单链表的第一个公共节点">两个单链表的第一个公共节点</h2>
+
+<p>思路开始前，我们一定要想像出两个链表相交的样子，应该是一个Y字形的，这样就方便思考了。可以先遍历两个单链表得到长度，然后求得两个链表长度的差值，然后让长的那个链表先走到差值长度位置，然后两个链表再同时遍历，直到找到第一个公共节点。</p>
+
+<pre><code>Node *findFirstSameNode(Node *head1, Node *head2) {
+    //
+    int len1 = getListLength(head1);
+    int len2 = getListLength(head2);
+    //
+    if (len1 &gt; len2) {
+        int diff = len1 - len2;
+        while (diff-- &gt; 0) {
+            head1 = head1-&gt;next;
+        }
+    } else {
+        int diff = len2 - len1;
+        while (diff-- &gt; 0) {
+            head2 = head2-&gt;next;
+        }
+    }
+    while (NULL != head1) {
+        if (head1 == head2) {
+            return head1;
+        } else {
+            head1 = head1-&gt;next;
+            head2 = head2-&gt;next;
+        }
+    }
+    return NULL;
+}
+</code></pre>
+
+<h2 id="链表问题总结">链表问题总结</h2>
+
+<p>很多链表问题，为了提高效率，可以考虑多用几个指针，快慢指针就是一种常见的方法。所以碰到新的链表问题，就考虑多几个指针遍历，看看能不能解决问题，这个思想一定要有。</p>
 
 	</div>
   <footer class="article-footer clearfix">
