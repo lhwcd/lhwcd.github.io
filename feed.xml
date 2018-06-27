@@ -6,10 +6,19 @@
     <description>Recent content on lhw blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 22 Jun 2018 10:08:24 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 27 Jun 2018 10:20:10 +0800</lastBuildDate>
     
 	<atom:link href="https://lhwcd.github.io/feed.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>字符串常见算法</title>
+      <link>https://lhwcd.github.io/posts/string/</link>
+      <pubDate>Wed, 27 Jun 2018 10:20:10 +0800</pubDate>
+      
+      <guid>https://lhwcd.github.io/posts/string/</guid>
+      <description>字符串相关的问题在面试的时候碰到的概率极高，虽然平时工作中，因为有成熟的框架和各种库，我们很少碰到这样的需求，但是解决问题的思路是需要我们了</description>
+    </item>
     
     <item>
       <title>ubuntu域名暂时不能解析</title>
