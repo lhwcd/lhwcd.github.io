@@ -82,6 +82,7 @@
 <li>
 <ul>
 <li><a href="#字符串翻转">字符串翻转</a></li>
+<li><a href="#旋转字符串">旋转字符串</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -129,6 +130,37 @@ void reverseStringWithStrlen(char *str) {
     for (int i = 0; i &lt; len / 2; i++) {
         swap(str[i], str[len - i - 1]);
     }
+}
+</code></pre>
+
+<h2 id="旋转字符串">旋转字符串</h2>
+
+<p>这个题目和上一个不同，这个需求是这样的：给定一个字符串，要求把字符串前面的若干个字符移动到字符串的尾部，如把字符串“abcdef”前面的2个字符&rsquo;a&rsquo;和&rsquo;b&rsquo;移动到字符串的尾部，使得原字符串变成字符串“cdefab”。请写一个函数完成此功能，要求对长度为n的字符串操作的时间复杂度为 O(n)，空间复杂度为 O(1)。最直观的解决办法就是暴力移位，先把a移到最后，然后再移b，这样就能完成任务，但是时间复杂度就是O(m*n)了，空间复杂度是O(1)，明显达不到性能要求。目前比较好的解决办法，是3步反转法，解决思路是这样的，例如字符串abcdef长度是6，需要逆序2个字符ab，那么用以下办法
+1.逆序整个字符串得到fedcba
+2.将字符串前面4个字符翻转一次cdefba
+3.将字符串后面剩下的2个字符逆序cdefab
+下面是代码</p>
+
+<pre><code>void reverse(char *left, char *right) {
+    while (left &lt; right) {
+        char temp = *left;
+        *left = *right;
+        *right = temp;
+        left++;
+        right--;
+    }
+}
+
+void reverseString(char *str, int k) {
+    //
+    if (NULL == str) {
+        return;
+    }
+    //
+    int len = strlen(str);
+    reverse(str, str + len - 1);
+    reverse(str, str + len - k - 1);
+    reverse(str + len - k, str + len - 1);
 }
 </code></pre>
 
