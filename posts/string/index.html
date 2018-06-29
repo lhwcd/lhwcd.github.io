@@ -83,6 +83,7 @@
 <ul>
 <li><a href="#字符串翻转">字符串翻转</a></li>
 <li><a href="#旋转字符串">旋转字符串</a></li>
+<li><a href="#字符串转为整数">字符串转为整数</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -162,6 +163,57 @@ void reverseString(char *str, int k) {
     reverse(str, str + len - k - 1);
     reverse(str + len - k, str + len - 1);
 }
+</code></pre>
+
+<h2 id="字符串转为整数">字符串转为整数</h2>
+
+<p>题目的要求是输入一个由数字组成的字符串，把它转换成整数并输出。例如：输入字符串&rdquo;123&rdquo;，输出整数123，不能使用库函数atoi。这个问题直接想，觉得还挺简单的，但你写一下，就会发现没有思虑清楚。一般解决这种问题的思路是这样的：1、首先判断字符串是否为空，返回0。2、考虑前面的是否是空格，如果是的话，要去掉。3、判断第一个字符是不是+和-，设置变量符号。4、循环取得字符串的数字，考虑字符串中有非数字，遇到就退出，保留前面的数字。5、要考虑溢出的情况，溢出返回Integer的最大值或最小值。下面是代码，参考了</p>
+
+<pre><code>int StringToInt(char *str) {
+  int StringToInt(char *str) {
+    const int INT_MAX = 2147483647;
+    const int INT_MIN = -2147483648;
+    long long sum = 0;
+    //
+    if (NULL == str) {
+        return 0;
+    }
+    //
+    while (' ' == *str || '\t' == *str)str++;
+    //
+    int sign = 1;
+    if ('-' == *str) {
+        sign = -1;
+        str++;
+    } else if ('+' == *str) {
+        sign = 1;
+        str++;
+    }
+    //
+    while (*str &gt;= '0' &amp;&amp; *str &lt;= '9') {
+        //
+        int c = *str - '0';
+        //
+        if (sign &gt; 0) {
+            if (sum &gt; INT_MAX / 10 || (sum == INT_MAX / 10 &amp;&amp; c &gt; INT_MAX % 10)) {
+                sum = INT_MAX;
+                break;
+            }
+        } else {
+            if (sum &gt; (unsigned) INT_MIN / 10 || (sum == (unsigned) INT_MIN / 10 &amp;&amp; c &gt; (unsigned) INT_MIN % 10)) {
+                sum = INT_MIN;
+                break;
+            }
+        }
+        //
+        sum = sum * 10 + c;
+        str++;
+    }
+    //
+    return sum;
+}
+}
+
 </code></pre>
 
 	</div>
