@@ -85,6 +85,7 @@
 <li><a href="#旋转字符串">旋转字符串</a></li>
 <li><a href="#字符串转为整数">字符串转为整数</a></li>
 <li><a href="#字符串包含">字符串包含</a></li>
+<li><a href="#字符串回文">字符串回文</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -227,6 +228,30 @@ void reverseString(char *str, int k) {
         if ((hash &amp; (1 &lt;&lt; (b[i] - 'A'))) == 0) {
             return false;
         }
+    }
+    return true;
+}
+</code></pre>
+
+<h2 id="字符串回文">字符串回文</h2>
+
+<p>palindrome，指一个顺着读和反过来读都一样的字符串。现在判断一个字串是否是回文？有两个思路，一个是同时从字符串头尾开始向中间扫描字串，如果所有字符都一样，那么这个字串就是一个回文，时间复杂度：O(n)，空间复杂度：O(1)。当然也可以从中间向两边扫描，如果所有字符都一样，那么这个字串是一个回文，时间复杂度：O(n)，空间复杂度：O(1)。没有什么大的差距。</p>
+
+<pre><code>
+bool IsPalindrome(const char *s, int n) {
+    if (NULL == s || n &lt;= 1) {
+        return false;
+    }
+
+    const char *front, *back;
+    front = s;
+    back = s + n - 1;
+    while (front &lt; back) {
+        if (*front != *back) {
+            return false;
+        }
+        front++;
+        back--;
     }
     return true;
 }
