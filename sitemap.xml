@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://lhwcd.github.io/posts/redis/</loc>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://lhwcd.github.io/posts/string/</loc>
     <lastmod>2018-06-27T10:20:10+08:00</lastmod>
   </url>
@@ -28,8 +33,32 @@
   </url>
   
   <url>
+    <loc>https://lhwcd.github.io/tags/docker/</loc>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lhwcd.github.io/categories/docker/</loc>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://lhwcd.github.io/posts/</loc>
-    <lastmod>2018-06-27T10:20:10+08:00</lastmod>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lhwcd.github.io/tags/redis/</loc>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lhwcd.github.io/categories/redis/</loc>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -41,7 +70,7 @@
   
   <url>
     <loc>https://lhwcd.github.io/tags/</loc>
-    <lastmod>2018-06-27T10:20:10+08:00</lastmod>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -59,13 +88,19 @@
   
   <url>
     <loc>https://lhwcd.github.io/feed.xml</loc>
-    <lastmod>2018-06-27T10:20:10+08:00</lastmod>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://lhwcd.github.io/tags/%E5%9F%9F%E5%90%8D/</loc>
     <lastmod>2018-06-22T10:08:24+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://lhwcd.github.io/tags/%E6%8C%81%E4%B9%85%E5%8C%96/</loc>
+    <lastmod>2018-07-20T15:58:06+08:00</lastmod>
     <priority>0</priority>
   </url>
   

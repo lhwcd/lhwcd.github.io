@@ -6,10 +6,28 @@
     <description>Recent content in Tags on lhw blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 27 Jun 2018 10:20:10 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 20 Jul 2018 15:58:06 +0800</lastBuildDate>
     
 	<atom:link href="https://lhwcd.github.io/tags/feed.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Docker</title>
+      <link>https://lhwcd.github.io/tags/docker/</link>
+      <pubDate>Fri, 20 Jul 2018 15:58:06 +0800</pubDate>
+      
+      <guid>https://lhwcd.github.io/tags/docker/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Redis</title>
+      <link>https://lhwcd.github.io/tags/redis/</link>
+      <pubDate>Fri, 20 Jul 2018 15:58:06 +0800</pubDate>
+      
+      <guid>https://lhwcd.github.io/tags/redis/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>String</title>
@@ -35,6 +53,15 @@
       <pubDate>Fri, 22 Jun 2018 10:08:24 +0800</pubDate>
       
       <guid>https://lhwcd.github.io/tags/%E5%9F%9F%E5%90%8D/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>持久化</title>
+      <link>https://lhwcd.github.io/tags/%E6%8C%81%E4%B9%85%E5%8C%96/</link>
+      <pubDate>Fri, 20 Jul 2018 15:58:06 +0800</pubDate>
+      
+      <guid>https://lhwcd.github.io/tags/%E6%8C%81%E4%B9%85%E5%8C%96/</guid>
       <description></description>
     </item>
     
