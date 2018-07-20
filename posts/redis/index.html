@@ -1,0 +1,404 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>Docker创建持久化Redis容器 - lhw blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+  
+  <meta name="description" content="我想要的功能是输入经纬度，能够查得到省市县的地名。同时还要查询速度快，能够独立部署。所以就不能使用在线查询，因为网络情况不可靠，而且也太慢了">
+  
+  <meta itemprop="name" content="Docker创建持久化Redis容器 - lhw blog">
+  <meta itemprop="description" content="我想要的功能是输入经纬度，能够查得到省市县的地名。同时还要查询速度快，能够独立部署。所以就不能使用在线查询，因为网络情况不可靠，而且也太慢了">
+  <meta itemprop="image" content="https://lhwcd.github.io/img/author.jpg">
+  
+  
+  <meta name="twitter:description" content="">
+  
+  <link rel="shortcut icon" href="https://lhwcd.github.io/img/favicon.ico"/>
+  <link rel="apple-touch-icon" href="https://lhwcd.github.io/apple-touch-icon.png" />
+  <link rel="apple-touch-icon-precomposed" href="https://lhwcd.github.io/apple-touch-icon.png" />
+  <link rel="stylesheet" href="https://lhwcd.github.io/highlight/styles/github.css">
+  <script src="https://lhwcd.github.io/highlight/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <link rel="stylesheet" href="https://lhwcd.github.io/font/hack/css/hack.min.css">
+  <link rel="stylesheet" href="https://lhwcd.github.io/css/style.css">
+</head>
+
+<body>
+  <header>
+    <div>
+  
+  <div id="imglogo">
+    <a href="https://lhwcd.github.io/"><img src="https://lhwcd.github.io/img/logo.svg" alt="lhw blog" title="lhw blog"/></a>
+  </div>
+  
+  <div id="textlogo">
+    <h1 class="site-name"><a href="https://lhwcd.github.io/" title="lhw blog">lhw blog</a></h1>
+    <h2 class="blog-motto">少写代码多读书</h2>
+  </div>
+  <div class="navbar"><a class="navbutton navmobile" href="#" title="menu"></a></div>
+  <nav class="animated">
+    <ul>
+      
+      <li><a href="/">首页</a></li>
+      
+      <li><a href="/about">关于</a></li>
+      
+      <li>
+        <form class="search" method="get" action="https://www.google.com/search">
+          <div>
+            <input type="text" id="search" name="q" placeholder="搜索">
+          </div>
+        </form>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+  </header>
+  <div id="container">
+    <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody">
+    <header class="article-info clearfix">
+  <h1 itemprop="name">
+      <a href="https://lhwcd.github.io/posts/redis/" title="Docker创建持久化Redis容器" itemprop="url">Docker创建持久化Redis容器</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://lhwdev.com/posts/" title="lhw">lhw</a>
+    
+  </p>
+  <p class="article-time">
+    <time datetime="2018-07-20 15:58:06 &#43;0800 CST" itemprop="datePublished">2018年07月20日</time>
+  </p>
+</header>
+
+	<div class="article-content">
+    
+		<div class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+      
+		</div>
+    
+    <p>我想要的功能是输入经纬度，能够查得到省市县的地名。同时还要查询速度快，能够独立部署。所以就不能使用在线查询，因为网络情况不可靠，而且也太慢了。所以我考虑使用redis的geo功能来做这个工作。选择使用docker安装redis，而不是原生安装，是因为不想碰那些配置和环境变量这些，同时方便以后项目的迁移。下面就是我的安装步骤，
+首先要确定到底安装哪个版本的redis镜像，我们要通过命令<code>docker search redis</code>在仓库里找一下</p>
+
+<pre><code>lhw@worker:~$ docker search redis
+NAME                                 DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED
+redis                                Redis is an open source key-value store that…   5475                [OK]                
+bitnami/redis                        Bitnami Redis Docker Image                      82                                      [OK]
+sameersbn/redis                                                                      68                                      [OK]
+tenstartups/redis-commander                                                          32                                      [OK]
+</code></pre>
+
+<p>我们找到了OFFICIAL的redis，我决定使用这个官方版本，于是使用命令<code>docker pull redis</code>把这个镜像拉下来</p>
+
+<pre><code>lhw@worker:~$ docker pull redis
+Using default tag: latest
+latest: Pulling from library/redis
+be8881be8156: Pull complete 
+d6f5ea773ca3: Pull complete 
+735cc65c0db4: Pull complete 
+ff89c30e4d8c: Pull complete 
+59bf782a86b3: Pull complete 
+ce8aaa9fe90a: Pull complete 
+Digest: sha256:096cff9e6024603decb2915ea3e501c63c5bb241e1b56830a52acfd488873843
+Status: Downloaded newer image for redis:latest
+</code></pre>
+
+<p>现在我们再看一下我们已经拥有的image</p>
+
+<pre><code>lhw@worker:~$ docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+redis               latest              f06a5773f01e        2 days ago          83.4MB
+hello-world         latest              e38bc07ac18e        3 months ago        1.85kB
+</code></pre>
+
+<p>下面我们就启动redis容器</p>
+
+<pre><code>lhw@worker:~$ docker run -p 6379:6379 -v ～/data:/data -d redis:latest redis-server --appendonly yes
+9f3ad3d6fd4969f3ee6d338659af9544773523e98240132d191b3e0fa011e7ed
+lhw@worker:~$ docker container ls
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+9f3ad3d6fd49        redis:latest        &quot;docker-entrypoint.s…&quot;   8 seconds ago       Up 6 seconds        0.0.0.0:6379-&gt;6379/tcp   vigilant_fermi
+</code></pre>
+
+<p><code>docker run</code>命令用于运行一个新容器，<code>-p</code>用于映射宿主机指定端口到容器指定端口，<code>-v</code>命令会将宿主机的<code>～/data</code>挂载到容器中，并绕过联合文件系统，我们可以在主机上直接操作该目录。任何在该镜像/data路径的文件将会被复制到Volume。<code>-d</code>是detach的缩写，表示在后台运行且打印容器的ID，后面的<code>--appendonly yes</code>是传给<code>redis-server</code>的命令的，表示打开AOF持久化存储。
+然后我就把准备好的命令文件导入到redis中</p>
+
+<pre><code>cat lnglat.txt | redis-cli
+</code></pre>
+
+<p>这里的<code>lnglat.txt</code>是什么东西？其实就是一个个命令的集合，内容如下</p>
+
+<pre><code>lhw@worker:~/data$ head lnglat.txt 
+GEOADD china 73.83 38.59 &quot;{\&quot;lat\&quot;:\&quot;38.59\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.6 &quot;{\&quot;lat\&quot;:\&quot;38.6\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.61 &quot;{\&quot;lat\&quot;:\&quot;38.61\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.62 &quot;{\&quot;lat\&quot;:\&quot;38.62\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.63 &quot;{\&quot;lat\&quot;:\&quot;38.63\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.64 &quot;{\&quot;lat\&quot;:\&quot;38.64\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.65 &quot;{\&quot;lat\&quot;:\&quot;38.65\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.66 &quot;{\&quot;lat\&quot;:\&quot;38.66\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.67 &quot;{\&quot;lat\&quot;:\&quot;38.67\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+GEOADD china 73.83 38.68 &quot;{\&quot;lat\&quot;:\&quot;38.68\&quot;,\&quot;lng\&quot;:\&quot;73.83\&quot;,\&quot;p\&quot;:\&quot;新疆\&quot;,\&quot;s\&quot;:\&quot;克孜勒苏柯尔克孜自治州\&quot;,\&quot;x\&quot;:\&quot;阿克陶县\&quot;}&quot;
+</code></pre>
+
+<p>这样，在我用户主目录的<code>/data</code>目录下，就有一个<code>appendonly.aof</code>文件，以后这个文件就可以迁移了</p>
+
+<pre><code>lhw@worker:~/data$ ls -al
+总用量 1188504
+drwxr-xr-x  2 999 lhw          4096 7月  20 11:53 .
+drwxr-xr-x 50 lhw lhw          4096 7月  20 11:53 ..
+-rw-r--r--  1 999 docker 1217013233 7月  20 09:51 appendonly.aof
+</code></pre>
+
+	</div>
+  <footer class="article-footer clearfix">
+  
+
+<div class="article-tags">
+  <span></span>
+  
+  <a href="https://lhwcd.github.io/tags/redis">redis</a>
+  
+  <a href="https://lhwcd.github.io/tags/docker">docker</a>
+  
+  <a href="https://lhwcd.github.io/tags/%E6%8C%81%E4%B9%85%E5%8C%96">持久化</a>
+  
+</div>
+
+
+
+
+
+<div class="article-categories">
+  <span></span>
+  
+  <a class="article-category-link" href="https://lhwcd.github.io/categories/redis">redis</a>
+  
+  <a class="article-category-link" href="https://lhwcd.github.io/categories/docker">docker</a>
+  
+</div>
+
+
+
+  <div class="article-share" id="share">
+    <div data-url="https://lhwcd.github.io/posts/redis/" data-title="Docker创建持久化Redis容器" data-tsina="" class="share clearfix">
+    </div>
+  </div>
+</footer>
+
+	</article>
+  
+
+
+
+</div>
+
+    <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+  
+
+<div class="categorieslist">
+  <p class="asidetitle">分类</p>
+  <ul>
+    
+    <li><a href="https://lhwcd.github.io/categories/docker" title="docker">docker<sup>1</sup></a></li>
+    
+    <li><a href="https://lhwcd.github.io/categories/redis" title="redis">redis<sup>1</sup></a></li>
+    
+    <li><a href="https://lhwcd.github.io/categories/ubuntu" title="ubuntu">ubuntu<sup>1</sup></a></li>
+    
+    <li><a href="https://lhwcd.github.io/categories/%e7%ae%97%e6%b3%95" title="算法">算法<sup>2</sup></a></li>
+    
+  </ul>
+</div>
+
+
+
+  
+
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+      
+			<li><a href="https://lhwcd.github.io/tags/docker" title="docker">docker<sup>1</sup></a></li>
+      
+			<li><a href="https://lhwcd.github.io/tags/redis" title="redis">redis<sup>1</sup></a></li>
+      
+			<li><a href="https://lhwcd.github.io/tags/string" title="string">string<sup>2</sup></a></li>
+      
+			<li><a href="https://lhwcd.github.io/tags/ubuntu" title="ubuntu">ubuntu<sup>1</sup></a></li>
+      
+			<li><a href="https://lhwcd.github.io/tags/%e5%9f%9f%e5%90%8d" title="域名">域名<sup>1</sup></a></li>
+      
+			<li><a href="https://lhwcd.github.io/tags/%e6%8c%81%e4%b9%85%e5%8c%96" title="持久化">持久化<sup>1</sup></a></li>
+      
+			<li><a href="https://lhwcd.github.io/tags/%e7%ae%97%e6%b3%95" title="算法">算法<sup>2</sup></a></li>
+      
+		</ul>
+</div>
+
+
+
+  
+  <div class="archiveslist">
+    <p class="asidetitle">归档</p>
+    <ul class="archive-list">
+      
+    </ul>
+
+  </div>
+
+
+  
+
+<div class="tagcloudlist">
+  <p class="asidetitle">标签云</p>
+  <div class="tagcloudlist clearfix">
+    
+    <a href="https://lhwcd.github.io/tags/docker" style="font-size: 12px;">docker</a>
+    
+    <a href="https://lhwcd.github.io/tags/redis" style="font-size: 12px;">redis</a>
+    
+    <a href="https://lhwcd.github.io/tags/string" style="font-size: 12px;">string</a>
+    
+    <a href="https://lhwcd.github.io/tags/ubuntu" style="font-size: 12px;">ubuntu</a>
+    
+    <a href="https://lhwcd.github.io/tags/%e5%9f%9f%e5%90%8d" style="font-size: 12px;">域名</a>
+    
+    <a href="https://lhwcd.github.io/tags/%e6%8c%81%e4%b9%85%e5%8c%96" style="font-size: 12px;">持久化</a>
+    
+    <a href="https://lhwcd.github.io/tags/%e7%ae%97%e6%b3%95" style="font-size: 12px;">算法</a>
+    
+  </div>
+</div>
+
+
+
+  
+
+</aside>
+</div>
+
+  </div>
+  <footer><div id="footer" >
+  
+  <div class="line">
+    <span></span>
+    <div style='background:no-repeat url("https://lhwcd.github.io/img/author.jpg") left top;-webkit-background-size:6.875em 6.875em;-moz-background-size:6.875em 6.875em;background-size:6.875em 6.875em;' class="author" ></div>
+  </div>
+  
+  
+  <section class="info">
+    <p>不批评不报怨 <br/> 经常性的赞美别人</p>
+  </section>
+  
+  <div class="social-font clearfix">
+    
+    
+    
+    <a href="https://github.com/lhwcd" target="_blank" title="github"></a>
+    
+    
+    
+  </div>
+  <p class="copyright">Powered by <a href="http://gohugo.io" target="_blank" title="hugo">hugo</a> and Theme by <a href="https://github.com/coderzh/hugo-pacman-theme" target="_blank" title="hugo-pacman-theme">hugo-pacman-theme</a> © 2018
+    
+    <a href="https://lhwcd.github.io/" title="lhw blog">lhw blog</a>
+    
+  </p>
+</div>
+</footer>
+  <script src="https://lhwcd.github.io/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+done = false;
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  $('form.search').on('submit', function (event) {
+    if (false === done) {
+      event.preventDefault();
+      var orgVal = $(this).find('#search').val();
+      $(this).find('#search').val('site:https:\/\/lhwcd.github.io\/ ' + orgVal);
+      done = true;
+      $(this).submit();
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina');
+  var html = [
+  '<a href="#" class="overlay" id="qrcode"></a>',
+  
+  '<a href="#textlogo" class="article-back-to-top" title="Top"></a>',
+  
+  
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="Weibo"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+  $('.article-share-qrcode').click(function(){
+    var imgSrc = $('#qrcode-pic').attr('data-src');
+    $('#qrcode-pic').attr('src', imgSrc);
+    $('#qrcode-pic').load(function(){
+        $('.qrcode strong').text(' ');
+    });
+  });
+});
+</script>
+
+
+
+
+
+</body>
+</html>
