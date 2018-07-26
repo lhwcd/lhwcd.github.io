@@ -69,7 +69,7 @@
     
   </p>
   <p class="article-time">
-    <time datetime="2018-07-20 15:58:06 &#43;0800 CST" itemprop="datePublished">2018年07月20日</time>
+    <time datetime="2018-07-20 15:58:06 &#43;0800 &#43;0800" itemprop="datePublished">2018年07月20日</time>
   </p>
 </header>
 
@@ -153,7 +153,11 @@ drwxr-xr-x 50 lhw lhw          4096 7月  20 11:53 ..
 -rw-r--r--  1 999 docker 1217013233 7月  20 09:51 appendonly.aof
 </code></pre>
 
-<p>以后我们就可以使用类似<code>GEORADIUS china 103 31 100 km ASC COUNT 1</code>的命令来查找经纬度对应的地名了。</p>
+<p>以后我们就可以使用类似<code>GEORADIUS china 103 31 100 km ASC COUNT 1</code>的命令来查找经纬度对应的地名了。
+那么我们如何知道我们导入的是否成功？也可以使用以下命令进入容器查看</p>
+
+<pre><code>docker container exec -it [containerID] /bin/bash
+</code></pre>
 
 	</div>
   <footer class="article-footer clearfix">
